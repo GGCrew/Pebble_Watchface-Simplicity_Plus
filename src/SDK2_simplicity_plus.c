@@ -227,9 +227,9 @@ void handle_init(void) {
 
 
 void handle_deinit(void) {
+	tick_timer_service_unsubscribe();
 	fonts_unload_custom_font(small_font);
 	fonts_unload_custom_font(large_font);
-  tick_timer_service_unsubscribe();
 }
 
 

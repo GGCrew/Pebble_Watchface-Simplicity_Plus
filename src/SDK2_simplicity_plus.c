@@ -8,14 +8,6 @@
 #define SHOW_YEAR true
 
 
-#define MY_UUID {0x47, 0x47, 0x20, 0x43, 0x72, 0x65, 0x77, 0xA6, 0xAA, 0x30, 0xED, 0xBE, 0x01, 0xE3, 0x8A, 0x02}
-PBL_APP_INFO(	MY_UUID, 
-							"Simplicity Plus", 
-							"GG Crew and Pebble Technology", 
-							2, 0, /* App version */
-							RESOURCE_ID_IMAGE_MENU_ICON, 
-							APP_INFO_WATCH_FACE);
-
 Window *window;
 
 TextLayer *text_day_layer;

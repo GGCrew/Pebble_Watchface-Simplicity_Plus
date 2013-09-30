@@ -128,7 +128,11 @@ void bluetooth_connection_callback(bool connected) {
 	} else {
 		// show missing bluetooth icon
 		layer_set_hidden(bitmap_layer_get_layer(bluetooth_icon_bitmap_layer), false);
-		vibes_double_pulse();
+		//vibes_double_pulse();
+		VibePattern vibration_pattern;
+		vibration_pattern.durations = (uint32_t []) {100, 100, 100, 100, 100};
+		vibration_pattern.num_segments = 5;
+		vibes_enqueue_custom_pattern(vibration_pattern);
 	}
 }
 
@@ -193,7 +197,7 @@ void handle_init(void) {
   layer_set_update_proc(line_layer, line_layer_update_callback);
   layer_add_child(window_layer, line_layer);
 	
-	bluetooth_icon_bitmap_layer = bitmap_layer_create(GRect(0,0,16,16));
+	bluetooth_icon_bitmap_layer = bitmap_layer_create(GRect((144 - 32), 0, 16, 16));
   bitmap_layer_set_background_color(bluetooth_icon_bitmap_layer, GColorClear);
 	bitmap_layer_set_bitmap(bluetooth_icon_bitmap_layer, bluetooth_image);
   layer_add_child(window_layer, bitmap_layer_get_layer(bluetooth_icon_bitmap_layer));
@@ -216,7 +220,8 @@ void handle_init(void) {
 	update_display_time(tick_time); 
 	
 	// TODO: check bluetooth status (in case bluetooth is already disconnected)
-
+	bluetooth_connection_callback(bluetooth_connection_service_peek());
+	
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 	bluetooth_connection_service_subscribe(bluetooth_connection_callback);
 }

@@ -37,13 +37,6 @@ GBitmap *bluetooth_image;
 /**/
 
 
-/*
-void line_layer_update_callback(Layer *layer, GContext* ctx) {
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
-}
-*/
-
 void line_layer_update_callback(Layer *me, GContext* ctx) {
   graphics_context_set_stroke_color(ctx, GColorWhite);
 
@@ -139,7 +132,6 @@ void bluetooth_connection_callback(bool connected) {
 	}
 }
 
-//void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 	update_display_time(tick_time);
 	if(units_changed & DAY_UNIT) {update_display_date(tick_time);}
@@ -147,72 +139,57 @@ void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 
 
 void handle_init(void) {
-//  window_init(&window, "SimplicityPlus");
 	window = window_create();
   window_stack_push(window, true /* Animated */);
   window_set_background_color(window, GColorBlack);
 
   Layer *window_layer = window_get_root_layer(window);
 
-//  resource_init_current_app(&APP_RESOURCES);
-
 	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_CONDENSED_21));
 	large_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_BOLD_SUBSET_49));
 
 	bluetooth_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
 
-//  text_layer_init(text_day_layer, window.layer.frame);
 	text_day_layer = text_layer_create(GRect(8, 44, 144-8, 168-44));
   text_layer_set_text_color(text_day_layer, GColorWhite);
   text_layer_set_background_color(text_day_layer, GColorClear);
-//  layer_set_frame(text_day_layer.layer, GRect(8, 44, 144-8, 168-44));
   text_layer_set_font(text_day_layer, small_font);
   layer_add_child(window_layer, text_layer_get_layer(text_day_layer));
 
 
 #if SHOW_WEEK
-//  text_layer_init(text_week_layer, window.layer.frame);
 	text_week_layer = text_layer_create(GRect(-12, 68, 144, 168-68));
   text_layer_set_text_color(text_week_layer, GColorWhite);
   text_layer_set_background_color(text_week_layer, GColorClear);
-//  layer_set_frame(text_week_layer.layer, GRect(-12, 68, 144, 168-68));
   text_layer_set_font(text_week_layer, small_font);
 	text_layer_set_text_alignment(text_week_layer, GTextAlignmentRight);
   layer_add_child(window_layer, text_layer_get_layer(text_week_layer));
 #endif
 
-//  text_layer_init(text_date_layer, window.layer.frame);
 	text_date_layer = text_layer_create(GRect(8, 68, 144-8, 168-68));
   text_layer_set_text_color(text_date_layer, GColorWhite);
   text_layer_set_background_color(text_date_layer, GColorClear);
-//  layer_set_frame(text_date_layer.layer, GRect(8, 68, 144-8, 168-68));
   text_layer_set_font(text_date_layer, small_font);
   layer_add_child(window_layer, text_layer_get_layer(text_date_layer));
 
 
 #if SHOW_YEAR
-//  text_layer_init(text_year_layer, window.layer.frame);
 	text_year_layer = text_layer_create(GRect(-12, 68, 144, 168-68));
   text_layer_set_text_color(text_year_layer, GColorWhite);
   text_layer_set_background_color(text_year_layer, GColorClear);
-//  layer_set_frame(text_year_layer.layer, GRect(-12, 68, 144, 168-68));
   text_layer_set_font(text_year_layer, small_font);
 	text_layer_set_text_alignment(text_year_layer, GTextAlignmentRight);
   layer_add_child(window_layer, text_layer_get_layer(text_year_layer));
 #endif
 
-//  text_layer_init(text_time_layer, window.layer.frame);
 	text_time_layer = text_layer_create(GRect(7, 92, 144-7, 168-92));
   text_layer_set_text_color(text_time_layer, GColorWhite);
   text_layer_set_background_color(text_time_layer, GColorClear);
-//  layer_set_frame(text_time_layer.layer, GRect(7, 92, 144-7, 168-92));
   text_layer_set_font(text_time_layer, large_font);
   layer_add_child(window_layer, text_layer_get_layer(text_time_layer));
 
 
-//  layer_init(&line_layer, window.layer.frame);
 	line_layer = layer_create(layer_get_frame(window_layer));
-//  line_layer.update_proc = &line_layer_update_callback;
   layer_set_update_proc(line_layer, line_layer_update_callback);
   layer_add_child(window_layer, line_layer);
 	
@@ -233,11 +210,12 @@ void handle_init(void) {
 	// force the display_updates instead of waiting for second/minute ticks in the main loop
 	time_t now;
 	struct tm *tick_time;
-//	get_time(tick_time);
   now = time(NULL);
   tick_time = localtime(&now);
 	update_display_date(tick_time);
 	update_display_time(tick_time); 
+	
+	// TODO: check bluetooth status (in case bluetooth is already disconnected)
 
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 	bluetooth_connection_service_subscribe(bluetooth_connection_callback);

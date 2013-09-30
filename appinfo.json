@@ -30,8 +30,8 @@
       },
 			{
 				"type": "png",
-				"file": "images/bluetooth_icon_16x16.png",
-				"name": "IMAGE_BLUETOOTH_ICON"
+				"file": "images/bluetooth_error_icon_16x16.png",
+				"name": "IMAGE_BLUETOOTH_ERROR_ICON"
 			}
     ]
   }

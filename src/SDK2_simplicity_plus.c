@@ -159,7 +159,7 @@ void handle_init(void) {
 	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_CONDENSED_21));
 	large_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_BOLD_SUBSET_49));
 
-	bluetooth_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ICON);
+	bluetooth_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
 
 //  text_layer_init(text_day_layer, window.layer.frame);
 	text_day_layer = text_layer_create(GRect(8, 44, 144-8, 168-44));

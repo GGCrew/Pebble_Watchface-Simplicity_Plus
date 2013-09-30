@@ -34,6 +34,11 @@ GFont large_font;
 
 GBitmap *bluetooth_error_image;
 GBitmap *battery_full_image;
+GBitmap *battery_low_image;
+GBitmap *battery_empty_image;
+GBitmap *battery_charging_low_image;
+GBitmap *battery_charging_half_image;
+GBitmap *battery_charging_full_image;
 
 
 /**/
@@ -162,7 +167,12 @@ void handle_init(void) {
 
 	bluetooth_error_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
 	battery_full_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_FULL_ICON);
-
+	battery_low_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_LOW_ICON);
+	battery_empty_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_EMPTY_ICON);
+	battery_charging_low_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_LOW_ICON);
+	battery_charging_half_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_HALF_ICON);
+	battery_charging_full_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_FULL_ICON);
+	
 	text_day_layer = text_layer_create(GRect(8, 44, 144-8, 168-44));
   text_layer_set_text_color(text_day_layer, GColorWhite);
   text_layer_set_background_color(text_day_layer, GColorClear);
@@ -251,6 +261,11 @@ void handle_deinit(void) {
 	fonts_unload_custom_font(large_font);
 	gbitmap_destroy(bluetooth_error_image);
 	gbitmap_destroy(battery_full_image);
+	gbitmap_destroy(battery_low_image);
+	gbitmap_destroy(battery_empty_image);
+	gbitmap_destroy(battery_charging_low_image);
+	gbitmap_destroy(battery_charging_half_image);
+	gbitmap_destroy(battery_charging_full_image);
 }
 
 

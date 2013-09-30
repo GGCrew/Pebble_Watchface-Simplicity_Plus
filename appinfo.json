@@ -37,6 +37,31 @@
 				"type": "png",
 				"file": "images/battery_full_icon_16x16.png",
 				"name": "IMAGE_BATTERY_FULL_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_low_icon_16x16.png",
+				"name": "IMAGE_BATTERY_LOW_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_empty_icon_16x16.png",
+				"name": "IMAGE_BATTERY_EMPTY_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_charging_low_icon_16x16.png",
+				"name": "IMAGE_BATTERY_CHARGING_LOW_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_charging_half_icon_16x16.png",
+				"name": "IMAGE_BATTERY_CHARGING_HALF_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_charging_full_icon_16x16.png",
+				"name": "IMAGE_BATTERY_CHARGING_FULL_ICON"
 			}
     ]
   }

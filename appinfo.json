@@ -32,6 +32,11 @@
 				"type": "png",
 				"file": "images/bluetooth_error_icon_16x16.png",
 				"name": "IMAGE_BLUETOOTH_ERROR_ICON"
+			},
+			{
+				"type": "png",
+				"file": "images/battery_full_icon_16x16.png",
+				"name": "IMAGE_BATTERY_FULL_ICON"
 			}
     ]
   }

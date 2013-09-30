@@ -27,11 +27,13 @@ InverterLayer *inverter_layer;
 #endif
 
 BitmapLayer *bluetooth_icon_bitmap_layer;
+BitmapLayer *battery_icon_bitmap_layer;
 
 GFont small_font;
 GFont large_font;
 
-GBitmap *bluetooth_image;
+GBitmap *bluetooth_error_image;
+GBitmap *battery_full_image;
 
 
 /**/
@@ -136,6 +138,12 @@ void bluetooth_connection_callback(bool connected) {
 	}
 }
 
+
+void battery_state_callback(BatteryChargeState charge) {
+
+}
+
+
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 	update_display_time(tick_time);
 	if(units_changed & DAY_UNIT) {update_display_date(tick_time);}
@@ -152,7 +160,8 @@ void handle_init(void) {
 	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_CONDENSED_21));
 	large_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_BOLD_SUBSET_49));
 
-	bluetooth_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
+	bluetooth_error_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
+	battery_full_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_FULL_ICON);
 
 	text_day_layer = text_layer_create(GRect(8, 44, 144-8, 168-44));
   text_layer_set_text_color(text_day_layer, GColorWhite);
@@ -197,11 +206,17 @@ void handle_init(void) {
   layer_set_update_proc(line_layer, line_layer_update_callback);
   layer_add_child(window_layer, line_layer);
 	
-	bluetooth_icon_bitmap_layer = bitmap_layer_create(GRect((144 - 32), 0, 16, 16));
+	bluetooth_icon_bitmap_layer = bitmap_layer_create(GRect(((144 - 3) - 16) - ((16 + 2) * 1), 0, 16, 16));
   bitmap_layer_set_background_color(bluetooth_icon_bitmap_layer, GColorClear);
-	bitmap_layer_set_bitmap(bluetooth_icon_bitmap_layer, bluetooth_image);
+	bitmap_layer_set_bitmap(bluetooth_icon_bitmap_layer, bluetooth_error_image);
   layer_add_child(window_layer, bitmap_layer_get_layer(bluetooth_icon_bitmap_layer));
 	layer_set_hidden(bitmap_layer_get_layer(bluetooth_icon_bitmap_layer), true);
+	
+	battery_icon_bitmap_layer = bitmap_layer_create(GRect(((144 - 3) - 16) - ((16 + 2) * 0), 0, 16, 16));
+  bitmap_layer_set_background_color(battery_icon_bitmap_layer, GColorClear);
+	bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_full_image);
+  layer_add_child(window_layer, bitmap_layer_get_layer(battery_icon_bitmap_layer));
+	layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), false);
 	
 
 
@@ -219,20 +234,23 @@ void handle_init(void) {
 	update_display_date(tick_time);
 	update_display_time(tick_time); 
 	
-	// TODO: check bluetooth status (in case bluetooth is already disconnected)
+	// Checking current bluetooth status
 	bluetooth_connection_callback(bluetooth_connection_service_peek());
 	
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 	bluetooth_connection_service_subscribe(bluetooth_connection_callback);
+	battery_state_service_subscribe(battery_state_callback);
 }
 
 
 void handle_deinit(void) {
+	battery_state_service_unsubscribe();
 	bluetooth_connection_service_unsubscribe();
 	tick_timer_service_unsubscribe();
 	fonts_unload_custom_font(small_font);
 	fonts_unload_custom_font(large_font);
-	gbitmap_destroy(bluetooth_image);
+	gbitmap_destroy(bluetooth_error_image);
+	gbitmap_destroy(battery_full_image);
 }
 
 

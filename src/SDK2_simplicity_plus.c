@@ -144,8 +144,20 @@ void bluetooth_connection_callback(bool connected) {
 }
 
 
-void battery_state_callback(BatteryChargeState charge) {
-
+void battery_state_callback(BatteryChargeState battery_charge_state) {
+	if(battery_charge_state.is_charging) {
+		if(battery_charge_state.charge_percent <= 20) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_charging_low_image);}
+		else if(battery_charge_state.charge_percent <= 80) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_charging_half_image);}
+		else {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_charging_full_image);}
+		layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), false);
+	} else {
+		if(battery_charge_state.charge_percent <= 10) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_empty_image);}
+		else if(battery_charge_state.charge_percent <= 20) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_low_image);}
+		else {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_charging_full_image);}
+		
+		// Hide the battery icon if charge is over 20% (and we're not charging the battery)
+		layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), (battery_charge_state.charge_percent > 20));
+	}
 }
 
 
@@ -226,7 +238,7 @@ void handle_init(void) {
   bitmap_layer_set_background_color(battery_icon_bitmap_layer, GColorClear);
 	bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_full_image);
   layer_add_child(window_layer, bitmap_layer_get_layer(battery_icon_bitmap_layer));
-	layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), false);
+	layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), true);
 	
 
 
@@ -246,6 +258,9 @@ void handle_init(void) {
 	
 	// Checking current bluetooth status
 	bluetooth_connection_callback(bluetooth_connection_service_peek());
+	
+	// TODO: check current battery state
+	battery_state_callback(battery_state_service_peek());
 	
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 	bluetooth_connection_service_subscribe(bluetooth_connection_callback);

@@ -1,28 +1,24 @@
 #include <pebble.h>
 
 
+/*
 #define INVERTED false
 #define SHOW_WEEK false
 #define SHOW_YEAR true
+*/
 
 
 Window *window;
 
 TextLayer *text_day_layer;
-#if SHOW_WEEK
 TextLayer *text_week_layer;
-#endif
 TextLayer *text_date_layer;
-#if SHOW_YEAR
 TextLayer *text_year_layer;
-#endif
 TextLayer *text_time_layer;
 
 Layer *line_layer;
 
-#if INVERTED
 InverterLayer *inverter_layer;
-#endif
 
 BitmapLayer *bluetooth_icon_bitmap_layer;
 BitmapLayer *battery_icon_bitmap_layer;
@@ -37,6 +33,14 @@ GBitmap *battery_empty_image;
 GBitmap *battery_charging_low_image;
 GBitmap *battery_charging_half_image;
 GBitmap *battery_charging_full_image;
+
+#define NUMBER_OF_MENU_ITEMS 3
+enum e_options {
+	INVERTED = 0,
+	DISPLAY_WEEK = 1,
+	DISPLAY_YEAR = 2
+};
+bool options[NUMBER_OF_MENU_ITEMS];
 
 
 /**/
@@ -75,53 +79,68 @@ void update_display_time(struct tm *tick_time) {
 
 void update_display_date(struct tm *tick_time) {
   // Need to be static because they're used by the system later.
-#if SHOW_YEAR
-	// short month
-	static char date_text[] = "Xxx 00";
+  static char date_text[] = "Xxxxxxxxx 00";		// reserve enough space for full month name
   static char year_text[] = "0000";
-#else
-	// full month
-  static char date_text[] = "Xxxxxxxxx 00";
-#endif
-
-#if SHOW_WEEK
-	static char day_text[] = "Xxx";
+	static char day_text[] = "Xxxxxxxxx";	// reserve enough space for full weekday name
 	static char week_text[] = "w00";
-#else
-	static char day_text[] = "Xxxxxxxxx";
-#endif
 
-#if SHOW_WEEK
-	// shortened day_text
-  strftime(day_text, sizeof(day_text), "%a", tick_time);
+	if(options[DISPLAY_WEEK]) {
+		// shortened day_text
+		strftime(day_text, sizeof(day_text), "%a", tick_time);
+		
+		//int week = 87; // PLACEHOLDER VALUE!  Should be calculated - look at code from simplicity_plus_wo_year
+		//sprintf(week_text, "w%d", week);
+		strftime(week_text, sizeof(week_text), "%w", tick_time);
+		text_layer_set_text(text_week_layer, week_text);
+	} else {
+		// full day_text
+		strftime(day_text, sizeof(day_text), "%A", tick_time);
+	}
+	text_layer_set_text(text_day_layer, day_text);
 	
-	// Too bad sprintf doesn't work with this version of the Pebble SDK...
-	// sprintf(week_text, "w%d", week);
-	strcpy(week_text, "");
-
-	itoa(week, temp_text);
-	strcat(week_text, "P");
-	strcat(week_text, temp_text);
-
-	strftime(week_text, sizeof(week_text), "%w", tick_time);
-  text_layer_set_text(text_week_layer, week_text);
-#else
-	// full day_text
-  strftime(day_text, sizeof(day_text), "%A", tick_time);
-#endif
-  text_layer_set_text(text_day_layer, day_text);
-
-#if SHOW_YEAR
-	// short month
-  strftime(date_text, sizeof(date_text), "%b %e", tick_time);
+//#if SHOW_WEEK
+//	// shortened day_text
+//  strftime(day_text, sizeof(day_text), "%a", tick_time);
+//	
+//	// Too bad sprintf doesn't work with this version of the Pebble SDK...
+//	// sprintf(week_text, "w%d", week);
+//	strcpy(week_text, "");
+//
+//	itoa(week, temp_text);
+//	strcat(week_text, "P");
+//	strcat(week_text, temp_text);
+//
+//	strftime(week_text, sizeof(week_text), "%w", tick_time);
+//  text_layer_set_text(text_week_layer, week_text);
+//#else
+//	// full day_text
+//  strftime(day_text, sizeof(day_text), "%A", tick_time);
+//#endif
+//	text_layer_set_text(text_day_layer, day_text);
 	
-  strftime(year_text, sizeof(year_text), "%Y", tick_time);
-  text_layer_set_text(text_year_layer, year_text);
-#else
-	// full month
-	strftime(date_text, sizeof(date_text), "%B %e", tick_time);
-#endif
+	if(options[DISPLAY_YEAR]) {
+		// short month
+		strftime(date_text, sizeof(date_text), "%b %e", tick_time);
+		
+		strftime(year_text, sizeof(year_text), "%Y", tick_time);
+		text_layer_set_text(text_year_layer, year_text);
+	} else {
+		// full month
+		strftime(date_text, sizeof(date_text), "%B %e", tick_time);
+	}
   text_layer_set_text(text_date_layer, date_text);
+	
+//#if SHOW_YEAR
+//	// short month
+//  strftime(date_text, sizeof(date_text), "%b %e", tick_time);
+//	
+//  strftime(year_text, sizeof(year_text), "%Y", tick_time);
+//  text_layer_set_text(text_year_layer, year_text);
+//#else
+//	// full month
+//	strftime(date_text, sizeof(date_text), "%B %e", tick_time);
+//#endif
+//  text_layer_set_text(text_date_layer, date_text);
 }
 
 
@@ -159,6 +178,19 @@ void battery_state_callback(BatteryChargeState battery_charge_state) {
 }
 
 
+void load_options_from_persistent_storage(void) {
+	// default values
+	options[INVERTED] = false;
+	options[DISPLAY_WEEK] = false;
+	options[DISPLAY_YEAR] = true;
+	
+	// load values (or set them, if they don't already exist)
+	if(persist_exists(INVERTED))			{options[INVERTED]			= persist_read_bool(INVERTED);}			else {persist_write_bool(INVERTED,			options[INVERTED]);}
+	if(persist_exists(DISPLAY_WEEK))	{options[DISPLAY_WEEK]	= persist_read_bool(DISPLAY_WEEK);}	else {persist_write_bool(DISPLAY_WEEK,	options[DISPLAY_WEEK]);}
+	if(persist_exists(DISPLAY_YEAR))	{options[DISPLAY_YEAR]	= persist_read_bool(DISPLAY_YEAR);}	else {persist_write_bool(DISPLAY_YEAR,	options[DISPLAY_YEAR]);}
+}
+
+
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 	update_display_time(tick_time);
 	if(units_changed & DAY_UNIT) {update_display_date(tick_time);}
@@ -189,15 +221,12 @@ void handle_init(void) {
   text_layer_set_font(text_day_layer, small_font);
   layer_add_child(window_layer, text_layer_get_layer(text_day_layer));
 
-
-#if SHOW_WEEK
 	text_week_layer = text_layer_create(GRect(-12, 68, 144, 168-68));
   text_layer_set_text_color(text_week_layer, GColorWhite);
   text_layer_set_background_color(text_week_layer, GColorClear);
   text_layer_set_font(text_week_layer, small_font);
 	text_layer_set_text_alignment(text_week_layer, GTextAlignmentRight);
   layer_add_child(window_layer, text_layer_get_layer(text_week_layer));
-#endif
 
 	text_date_layer = text_layer_create(GRect(8, 68, 144-8, 168-68));
   text_layer_set_text_color(text_date_layer, GColorWhite);
@@ -205,15 +234,12 @@ void handle_init(void) {
   text_layer_set_font(text_date_layer, small_font);
   layer_add_child(window_layer, text_layer_get_layer(text_date_layer));
 
-
-#if SHOW_YEAR
 	text_year_layer = text_layer_create(GRect(-12, 68, 144, 168-68));
   text_layer_set_text_color(text_year_layer, GColorWhite);
   text_layer_set_background_color(text_year_layer, GColorClear);
   text_layer_set_font(text_year_layer, small_font);
 	text_layer_set_text_alignment(text_year_layer, GTextAlignmentRight);
   layer_add_child(window_layer, text_layer_get_layer(text_year_layer));
-#endif
 
 	text_time_layer = text_layer_create(GRect(7, 92, 144-7, 168-92));
   text_layer_set_text_color(text_time_layer, GColorWhite);
@@ -237,14 +263,15 @@ void handle_init(void) {
 	bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_full_image);
   layer_add_child(window_layer, bitmap_layer_get_layer(battery_icon_bitmap_layer));
 	layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), true);
-	
 
-
-#if INVERTED
 	// The inverter layer (probably) has to be the last layer added to the window
-	inverter_layer_init(&inverter_layer, window.layer.frame);
-	layer_add_child(window_layer, text_layer_get_layer(inverter_layer));
-#endif
+	inverter_layer = inverter_layer_create(layer_get_frame(window_get_root_layer(window)));
+	layer_add_child(window_get_root_layer(window), inverter_layer_get_layer(inverter_layer));
+
+	load_options_from_persistent_storage();
+	if(!options[DISPLAY_WEEK])	{layer_set_hidden(text_layer_get_layer(text_week_layer), true);}
+	if(!options[DISPLAY_YEAR])	{layer_set_hidden(text_layer_get_layer(text_year_layer), true);}
+	if(!options[INVERTED])			{layer_set_hidden(inverter_layer_get_layer(inverter_layer), true);}
 
 	// force the display_updates instead of waiting for second/minute ticks in the main loop
 	time_t now;

@@ -207,13 +207,13 @@ void handle_init(void) {
 	small_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_CONDENSED_21));
 	large_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_BOLD_SUBSET_49));
 
-	bluetooth_error_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
-	battery_full_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_FULL_ICON);
-	battery_low_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_LOW_ICON);
-	battery_empty_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_EMPTY_ICON);
-	battery_charging_low_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_LOW_ICON);
-	battery_charging_half_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_HALF_ICON);
-	battery_charging_full_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_FULL_ICON);
+	bluetooth_error_image				= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_ERROR_ICON);
+	battery_full_image					= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_FULL_ICON);
+	battery_low_image						= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_LOW_ICON);
+	battery_empty_image					= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_EMPTY_ICON);
+	battery_charging_low_image	= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_LOW_ICON);
+	battery_charging_half_image	= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_HALF_ICON);
+	battery_charging_full_image	= gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BATTERY_CHARGING_FULL_ICON);
 	
 	text_day_layer = text_layer_create(GRect(8, 44, 144-8, 168-44));
   text_layer_set_text_color(text_day_layer, GColorWhite);
@@ -306,6 +306,16 @@ void handle_deinit(void) {
 	gbitmap_destroy(battery_charging_low_image);
 	gbitmap_destroy(battery_charging_half_image);
 	gbitmap_destroy(battery_charging_full_image);
+	layer_destroy(line_layer);
+	text_layer_destroy(text_day_layer);
+	text_layer_destroy(text_week_layer);
+	text_layer_destroy(text_date_layer);
+	text_layer_destroy(text_year_layer);
+	text_layer_destroy(text_time_layer);
+	bitmap_layer_destroy(battery_icon_bitmap_layer);
+	bitmap_layer_destroy(bluetooth_icon_bitmap_layer);
+	inverter_layer_destroy(inverter_layer);
+	window_destroy(window);
 }
 
 

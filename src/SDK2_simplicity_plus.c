@@ -169,8 +169,7 @@ void battery_state_callback(BatteryChargeState battery_charge_state) {
 		layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), false);
 	} else {
 		if(battery_charge_state.charge_percent <= 5) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_empty_image);}
-		else if(battery_charge_state.charge_percent <= 10) {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_low_image);}
-		else {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_charging_full_image);}
+		else {bitmap_layer_set_bitmap(battery_icon_bitmap_layer, battery_low_image);}
 		
 		// Hide the battery icon if charge is over 20% (and we're not charging the battery)
 		layer_set_hidden(bitmap_layer_get_layer(battery_icon_bitmap_layer), (battery_charge_state.charge_percent > 20));

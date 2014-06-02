@@ -3,8 +3,8 @@
   "shortName": "Simplicity Plus",
   "longName": "Simplicity Plus",
   "companyName": "GG Crew and Pebble Technology",
-  "versionCode": 2,
-  "versionLabel": "2.0.0",
+  "versionCode": 3,
+  "versionLabel": "2.0.2",
   "watchapp": {
     "watchface": true
   },
